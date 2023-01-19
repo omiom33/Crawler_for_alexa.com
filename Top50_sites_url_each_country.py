@@ -7,16 +7,14 @@ def crawl_all_links():
     driver.get('https://www.alexa.com/topsites/countries')
     html = driver.page_source
     soup = BeautifulSoup(html)
-    list_of_data = []
-    for tag in soup.find_all('div'):
-        list_of_data.append(tag)
-    links = []
+    list_of_data = list(soup.find_all('div'))
     # full_data = [links]
     tags = []
-    # print(list_of_data[0])
-    for item in str(list_of_data[0]).split('\n'):
-        if '<li><a href="countries/' in item:
-            links.append(item.split('f="countries/')[1].split('<')[0])
+    links = [
+        item.split('f="countries/')[1].split('<')[0]
+        for item in str(list_of_data[0]).split('\n')
+        if '<li><a href="countries/' in item
+    ]
     sites_and_categories = []
     # print(links)
     for element in links:
@@ -26,16 +24,14 @@ def crawl_all_links():
         driver.get(url)
         html = driver.page_source
         soup = BeautifulSoup(html)
-        list_of_data = []
-        for tag in soup.find_all('div'):
-            list_of_data.append(tag)
+        list_of_data = list(soup.find_all('div'))
         # get_direct_links(element, url)
         same_category = []
         for item in str(list_of_data[0]).split('\n'):
             site_data = []
             if '<a href="/siteinfo/' in item:
                 site_name = item.split('fo/')[1].split('">')[0]
-                site_data = [site_name, url + '/' + str(element.split('">')[1])]
+                site_data = [site_name, f'{url}/' + str(element.split('">')[1])]
                 sites_and_categories.append(site_data)
         driver.close()
 
@@ -46,11 +42,11 @@ def crawl_all_links():
 
     for i in range(len(sites_and_categories)):
         print(i)
-        print(str(sites_and_categories[i][0]))
+        print(sites_and_categories[i][0])
         print(str(sites_and_categories[i][1]).split('https://www.alexa.com/topsites/countries/')[1])
         f.write('\n' + str(sites_and_categories[i][0]) + ',' +
                 str(sites_and_categories[i][1]).split('https://www.alexa.com/topsites/countries/')[1])
-        print('written ' + str(i) + 'o min website')
+        print(f'written {str(i)}o min website')
     return sites_and_categories
 
 
